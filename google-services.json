@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "442900270086",
+    "project_id": "agip-9c379",
+    "storage_bucket": "agip-9c379.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:442900270086:android:60290e3dce42bc180bc787",
+        "android_client_info": {
+          "package_name": "com.agilog.family"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAIdyrK0fScDzhgQxSgpN7oW05Oe-iOdNI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
