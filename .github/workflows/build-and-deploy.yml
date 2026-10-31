@@ -56,9 +56,11 @@ jobs:
           test -s source/android/app/build.gradle
           cp google-services.json source/android/app/google-services.json
 
-      - name: Fix Firebase Timestamp imports
+      - name: Fix Android dependencies and imports
         run: |
           sed -i 's/com\.google\.firebase\.firestore\.Timestamp/com.google.firebase.Timestamp/g' source/android/app/src/main/java/com/agilog/local/*.java
+          sed -i '/^dependencies[[:space:]]*{/a\  implementation "com.google.guava:guava:33.4.8-android"' source/android/app/build.gradle
+          grep 'com.google.guava:guava' source/android/app/build.gradle
 
       - name: Set up Java
         uses: actions/setup-java@v4
@@ -70,8 +72,7 @@ jobs:
         uses: android-actions/setup-android@v4
 
       - name: Install Android SDK packages
-        run: |
-          sdkmanager --install 'platforms;android-35' 'build-tools;35.0.0'
+        run: sdkmanager --install 'platforms;android-35' 'build-tools;35.0.0'
 
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
@@ -80,7 +81,7 @@ jobs:
 
       - name: Build APK
         working-directory: source/android
-        run: gradle :app:assembleDebug --no-daemon --stacktrace
+        run: gradle :app:assembleDebug --no-daemon --console=plain
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
