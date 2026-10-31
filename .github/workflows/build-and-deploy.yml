@@ -1,0 +1,60 @@
+name: 아기로그 가족 앱 빌드
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+jobs:
+  web:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Prepare iPhone web app
+        run: |
+          test -s AgilogFamily.zip
+          test -s firebase-config.js
+          mkdir -p source
+          unzip -q AgilogFamily.zip -d source
+          cp firebase-config.js source/web/firebase-config.js
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: source/web
+  deploy:
+    needs: web
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+    steps:
+      - uses: actions/deploy-pages@v4
+  android:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Prepare Android app
+        run: |
+          test -s AgilogFamily.zip
+          test -s google-services.json
+          mkdir -p source
+          unzip -q AgilogFamily.zip -d source
+          cp google-services.json source/android/app/google-services.json
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: android-actions/setup-android@v4
+      - run: sdkmanager --install 'platforms;android-35' 'build-tools;35.0.0'
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.14.3'
+      - name: Build APK
+        working-directory: source/android
+        run: gradle :app:assembleDebug --no-daemon
+      - uses: actions/upload-artifact@v4
+        with:
+          name: AgilogFamily-APK
+          path: source/android/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
